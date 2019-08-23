@@ -16,19 +16,24 @@ class ContactController extends AbstractController
     /**
      * @Route("/contact", name="contact")
      */
-    public function contact(Request $request, \Swift_Mailer $mailer)
+    public function contact(Request $request, \Swift_Mailer $mailer, $departement)
     {
         //create form from ContactType
         $form = $this->createForm(ContactType::class);
 
         $message = (new \Swift_Message('Nouveau mail'))
         ->setFrom('sender@mail.xyz')
-        ->setTo('receiver@mail.xyz')
+        ->setTo($departement[0]["email"])
         ->setBody(
-            'hello',
+            $this->renderView(
+            // templates/emails/registration.html.twig
+                'templates/contact/mail.html.twig', [
+                    'form' => $form,
+                    'departement' => $departement
+                ]
+            ),
             'text/html'
-        )
-    ;
+        );
 
     $mailer->send($message);
 
